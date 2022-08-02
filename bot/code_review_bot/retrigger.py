@@ -42,20 +42,18 @@ def main(env):
     total = 0
     for task in tasks:
         phid = task["diff_phid"]
-        print("Triggering {} > {}".format(phid, task["title"]))
+        print(f'Triggering {phid} > {task["title"]}')
 
         if phid in skip_phids:
-            print(">> Skipping, phid {} has already a non-erroneous task".format(phid))
+            print(f">> Skipping, phid {phid} has already a non-erroneous task")
             continue
 
         extra_env = {"ANALYSIS_SOURCE": "phabricator", "ANALYSIS_ID": phid}
-        task = hooks.triggerHook(
-            "project-relman", "code-review-{}".format(env), extra_env
-        )
-        print(">> New task {}".format(task["status"]["taskId"]))
+        task = hooks.triggerHook("project-relman", f"code-review-{env}", extra_env)
+        print(f'>> New task {task["status"]["taskId"]}')
         total += 1
 
-    print("Triggered {} tasks".format(total))
+    print(f"Triggered {total} tasks")
 
 
 if __name__ == "__main__":

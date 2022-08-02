@@ -13,7 +13,7 @@ here = os.path.dirname(__file__)
 def read_requirements(file_):
     lines = []
     with open(file_) as f:
-        for line in f.readlines():
+        for line in f:
             line = line.strip()
             if (
                 line.startswith("-e ")

@@ -243,9 +243,10 @@ class Workflow(object):
         # Add a sub namespace with the task id to be able to list
         # tasks from the parent namespace
         namespaces = revision.namespaces + [
-            "{}.{}".format(namespace, settings.taskcluster.task_id)
+            f"{namespace}.{settings.taskcluster.task_id}"
             for namespace in revision.namespaces
         ]
+
 
         # Build complete namespaces list, with monitoring update
         full_namespaces = [
@@ -273,7 +274,7 @@ class Workflow(object):
         tasks = self.queue_service.listTaskGroup(group_id)
         assert "tasks" in tasks
         tasks = {task["status"]["taskId"]: task for task in tasks["tasks"]}
-        assert len(tasks) > 0
+        assert tasks
         logger.info("Loaded Taskcluster group", id=group_id, tasks=len(tasks))
 
         # Update the local revision with tasks
@@ -384,11 +385,11 @@ class Workflow(object):
         try:
             task_id = task_status["status"]["taskId"]
         except KeyError:
-            raise Exception("Cannot read task name {}".format(task_id))
+            raise Exception(f"Cannot read task name {task_id}")
         try:
             name = task_status["task"]["metadata"]["name"]
         except KeyError:
-            raise Exception("Cannot read task name {}".format(task_id))
+            raise Exception(f"Cannot read task name {task_id}")
 
         # Default format is used first when the correct artifact is available
         if DefaultTask.matches(task_id):

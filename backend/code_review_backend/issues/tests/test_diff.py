@@ -48,7 +48,7 @@ class DiffAPITestCase(APITestCase):
         # Force created date update without using inner django trigger
         # so that all diffs in the test have the same date to be able
         # to compare the payload easily
-        self.now = datetime.utcnow().isoformat() + "Z"
+        self.now = f"{datetime.utcnow().isoformat()}Z"
         Diff.objects.update(created=self.now)
 
     def test_list_diffs(self):

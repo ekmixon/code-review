@@ -155,17 +155,16 @@ class Issue(abc.ABC):
             # Load all the lines affected by the issue
             file_content = self.revision.load_file(self.path)
         except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 404:
-                logger.warning(
-                    "Failed to download a file with an issue", path=self.path
-                )
-
-                # We still build the hash with empty content
-                file_content = ""
-            else:
+            if e.response.status_code != 404:
                 # When encountering another HTTP error, raise the issue
                 raise
 
+            logger.warning(
+                "Failed to download a file with an issue", path=self.path
+            )
+
+            # We still build the hash with empty content
+            file_content = ""
         # Build raw content:
         # 1. lines affected by patch
         # 2. without any spaces around each line
@@ -257,11 +256,7 @@ class Issue(abc.ABC):
         Build the Phabricator LintResult instance
         """
         # Add the level to the issue message
-        if self.level == Level.Error:
-            # We use the IMPORTANT red block silently
-            prefix = "(IMPORTANT) ERROR:"
-        else:
-            prefix = "WARNING:"
+        prefix = "(IMPORTANT) ERROR:" if self.level == Level.Error else "WARNING:"
         description = f"{prefix} {self.message}"
 
         # Add a fix when available

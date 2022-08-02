@@ -36,14 +36,13 @@ class BuildErrorsReporter(Reporter):
 
         assert (
             "attachments" in revision.diff
-        ), "Unable to find the commits for revision {}.".format(revision.phid)
+        ), f"Unable to find the commits for revision {revision.phid}."
+
 
         attachments = revision.diff["attachments"]
 
         if "commits" not in attachments and "commits" not in attachments["commits"]:
-            logger.info(
-                "Unable to find the commits for revision {}.".format(revision.phid)
-            )
+            logger.info(f"Unable to find the commits for revision {revision.phid}.")
             return
 
         build_errors = [issue for issue in issues if issue.is_build_error()]

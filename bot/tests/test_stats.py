@@ -43,5 +43,5 @@ def test_base_stats():
     stats.client = MockInflux()
     assert len(stats.client.points) == 0
     stats.flush()
-    assert len(stats.metrics) == 0
+    assert not stats.metrics
     assert len(stats.client.points) == 1

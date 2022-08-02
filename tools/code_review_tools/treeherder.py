@@ -12,7 +12,7 @@ def get_job_url(repository, revision, task_id=None, run_id=None, **params):
     assert "repo" not in params, "repo cannot be set in params"
     assert "revision" not in params, "revision cannot be set in params"
 
-    params.update({"repo": repository, "revision": revision})
+    params |= {"repo": repository, "revision": revision}
 
     if task_id is not None and run_id is not None:
         params["selectedTaskRun"] = f"{task_id}-{run_id}"

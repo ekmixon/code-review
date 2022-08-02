@@ -114,7 +114,7 @@ class CoverityIssue(Issue):
         return ISSUE_MARKDOWN.format(
             check=self.check,
             message=self.message,
-            location="{}:{}".format(self.path, self.line),
+            location=f"{self.path}:{self.line}",
             publishable=self.is_publishable() and "yes" or "no",
             is_local=self.is_local() and "yes" or "no",
             reliability=self.reliability.value,

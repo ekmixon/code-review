@@ -91,7 +91,7 @@ class CodeReview(PhabricatorActions):
             for conf in repositories
             if phab_repo["fields"]["name"] == conf["name"]
         }
-        assert len(repositories) > 0, "No repositories configured"
+        assert repositories, "No repositories configured"
         logger.info(
             "Configured repositories", names=[r.name for r in repositories.values()]
         )
@@ -162,12 +162,11 @@ class CodeReview(PhabricatorActions):
                 namespace="code-review",
                 name="general",
                 result=UnitResultState.Broken,
-                details="WARNING: An error occurred in the code review bot.\n\n```{}```".format(
-                    extras["message"]
-                ),
+                details=f'WARNING: An error occurred in the code review bot.\n\n```{extras["message"]}```',
                 format="remarkup",
                 duration=extras.get("duration", 0),
             )
+
             self.api.update_build_target(
                 build.target_phid, BuildState.Fail, unit=[failure]
             )
@@ -177,12 +176,11 @@ class CodeReview(PhabricatorActions):
                 namespace="code-review",
                 name="mercurial",
                 result=UnitResultState.Fail,
-                details="WARNING: The code review bot failed to apply your patch.\n\n```{}```".format(
-                    extras["message"]
-                ),
+                details=f'WARNING: The code review bot failed to apply your patch.\n\n```{extras["message"]}```',
                 format="remarkup",
                 duration=extras.get("duration", 0),
             )
+
             self.api.update_build_target(
                 build.target_phid, BuildState.Fail, unit=[failure]
             )

@@ -59,10 +59,11 @@ class MailReporter(Reporter):
 
         content = EMAIL_HEADER.format(
             total=len(issues),
-            publishable=sum([i.is_publishable() for i in issues]),
+            publishable=sum(i.is_publishable() for i in issues),
             stats=stats,
             review_url=revision.url,
         )
+
         if revision.improvement_patches:
             content += "## Improvement patches:\n\n{}\n\n".format(
                 "\n".join(
@@ -74,7 +75,7 @@ class MailReporter(Reporter):
         if len(content) > 102400:
             # Content is 102400 chars max
             content = content[:102000] + "\n\n... Content max limit reached!"
-        subject = "[{}] New Static Analysis {}".format(settings.app_channel, revision)
+        subject = f"[{settings.app_channel}] New Static Analysis {revision}"
         for email in self.emails:
             self.notify.email(
                 {

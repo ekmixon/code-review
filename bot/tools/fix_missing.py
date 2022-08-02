@@ -133,7 +133,7 @@ def find_task(push_id):
     data = resp.json()
 
     tasks = [dict(zip(data["job_property_names"], res)) for res in data["results"]]
-    assert len(tasks) > 0
+    assert tasks
 
     # Task group is first task id
     task_group_id = tasks[0]["task_id"]

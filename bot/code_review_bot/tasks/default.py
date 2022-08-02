@@ -34,7 +34,7 @@ class DefaultIssue(Issue):
         """
         Build the text content for reporters
         """
-        return "{}: {} [{}]".format(self.level.name, self.message, self.check)
+        return f"{self.level.name}: {self.message} [{self.check}]"
 
     def as_markdown(self):
         """
@@ -71,9 +71,7 @@ class DefaultTask(AnalysisTask):
             # This logic could become the standard once most analyzers
             # use that format
             check = issue.get("check")
-            if check:
-                return check
-            return issue.get("analyzer", self.name)
+            return check or issue.get("analyzer", self.name)
 
         return [
             DefaultIssue(
@@ -104,5 +102,5 @@ class DefaultTask(AnalysisTask):
         if "artifacts" not in result:
             return False
 
-        names = set(artifact["name"] for artifact in result["artifacts"])
+        names = {artifact["name"] for artifact in result["artifacts"]}
         return len(names.intersection(DefaultTask.artifacts)) > 0

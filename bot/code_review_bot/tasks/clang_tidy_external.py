@@ -57,7 +57,7 @@ class ExternalTidyIssue(ClangTidyIssue):
         assert self.is_build_error(), "ExternalTidyIssue is not a build error."
 
         return ERROR_MARKDOWN.format(
-            message=self.message, location="{}:{}".format(self.path, self.line)
+            message=self.message, location=f"{self.path}:{self.line}"
         )
 
     def is_expanded_macro(self):
@@ -78,11 +78,11 @@ class ExternalTidyIssue(ClangTidyIssue):
         message = self.message
         if len(message) > 0:
             message = message[0].capitalize() + message[1:]
-        body = "{}: {} [external-tidy: {}]".format(self.level.name, message, self.check)
+        body = f"{self.level.name}: {message} [external-tidy: {self.check}]"
 
         # Always add body as it's been cleaned up
         if self.reason:
-            body += "\n{}".format(self.reason)
+            body += f"\n{self.reason}"
         return body
 
     def as_markdown_for_phab(self):
@@ -93,14 +93,14 @@ class ExternalTidyIssue(ClangTidyIssue):
         return ISSUE_MARKDOWN.format(
             level=self.level.value,
             message=self.message,
-            location="{}:{}:{}".format(self.path, self.line, self.column),
+            location=f"{self.path}:{self.line}:{self.column}",
             check=self.check,
             expanded_macro="yes" if self.is_expanded_macro() else "no",
             notes="\n".join(
                 [
                     ISSUE_NOTE_MARKDOWN.format(
                         message=n.message,
-                        location="{}:{}:{}".format(n.path, n.line, n.column),
+                        location=f"{n.path}:{n.line}:{n.column}",
                         body=n.body,
                     )
                     for n in self.notes
@@ -112,7 +112,7 @@ class ExternalTidyIssue(ClangTidyIssue):
         return ISSUE_MARKDOWN.format(
             level=self.level.value,
             message=self.message,
-            location="{}:{}:{}".format(self.path, self.line, self.column),
+            location=f"{self.path}:{self.line}:{self.column}",
             reason=self.reason,
             check=self.check,
             in_patch="yes" if self.revision.contains(self) else "no",
@@ -124,7 +124,7 @@ class ExternalTidyIssue(ClangTidyIssue):
                 [
                     ISSUE_NOTE_MARKDOWN.format(
                         message=n.message,
-                        location="{}:{}:{}".format(n.path, n.line, n.column),
+                        location=f"{n.path}:{n.line}:{n.column}",
                         body=n.body,
                     )
                     for n in self.notes
@@ -151,7 +151,7 @@ class ExternalTidyTask(ClangTidyTask):
         return BUILD_HELP_MSG
 
     def parse_issues(self, artifacts, revision):
-        issues = [
+        return [
             ExternalTidyIssue(
                 analyzer=self,
                 revision=revision,
@@ -172,4 +172,3 @@ class ExternalTidyTask(ClangTidyTask):
             for path, items in artifact["files"].items()
             for warning in items["warnings"]
         ]
-        return issues
