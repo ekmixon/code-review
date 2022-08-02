@@ -67,9 +67,7 @@ class Reporter(object):
 
         out = []
         for key in keys:
-            assert key in configuration, "Missing {} {}".format(
-                self.__class__.__name__, key
-            )
+            assert key in configuration, f"Missing {self.__class__.__name__} {key}"
             out.append(configuration[key])
 
         return out
@@ -123,7 +121,7 @@ class Reporter(object):
         def pluralize(word, nb):
             assert isinstance(word, str)
             assert isinstance(nb, int)
-            return "{} {}".format(nb, nb == 1 and word or word + "s")
+            return "{} {}".format(nb, nb == 1 and word or f"{word}s")
 
         # List all the issues classes
         issue_classes = {issue.__class__ for issue in issues}

@@ -244,8 +244,9 @@ class BugbugUtils:
 
         # Get the decision task of the push to try.
         decision_task_index = self.index_service.findTask(
-            "gecko.v2.try.revision.{}.taskgraph.decision".format(revision)
+            f"gecko.v2.try.revision.{revision}.taskgraph.decision"
         )
+
         decision_task_id = decision_task_index["taskId"]
 
         # Find the 'add-new-jobs' action to add new jobs to the task group.
@@ -344,9 +345,7 @@ class BugbugUtils:
             await self.notify_service.email(
                 {
                     "address": email,
-                    "subject": "Test selection triggered for {}".format(
-                        push["revision"]
-                    ),
+                    "subject": f'Test selection triggered for {push["revision"]}',
                     "content": push["treeherder_url"],
                     "template": "fullscreen",
                 }

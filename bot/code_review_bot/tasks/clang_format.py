@@ -66,7 +66,7 @@ class ClangFormatIssue(Issue):
         According to diff mode
         """
         if self.patch:
-            return "Replace with :\n\n```{}```".format(self.patch)
+            return f"Replace with :\n\n```{self.patch}```"
         return "Incorrect coding style [clang-format]"
 
     def as_markdown(self):

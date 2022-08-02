@@ -20,8 +20,8 @@ class AnalysisTask(object):
 
     def __init__(self, task_id, task_status):
         self.id = task_id
-        assert "task" in task_status, "No task data for {}".format(self.id)
-        assert "status" in task_status, "No status data for {}".format(self.id)
+        assert "task" in task_status, f"No task data for {self.id}"
+        assert "status" in task_status, f"No status data for {self.id}"
         self.task = task_status["task"]
         self.status = task_status["status"]
 
@@ -58,7 +58,7 @@ class AnalysisTask(object):
         """
         Build the task instance from a configured Taskcluster route
         """
-        assert cls.route is not None, "Missing route on {}".format(cls)
+        assert cls.route is not None, f"Missing route on {cls}"
 
         # Load its task id
         try:

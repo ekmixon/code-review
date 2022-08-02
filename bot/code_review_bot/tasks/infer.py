@@ -56,13 +56,13 @@ class InferIssue(Issue):
         message = self.message
         if len(message) > 0:
             message = message[0].capitalize() + message[1:]
-        return "{}: {} [infer: {}]".format(self.level.name, message, self.check)
+        return f"{self.level.name}: {message} [infer: {self.check}]"
 
     def as_markdown(self):
         return ISSUE_MARKDOWN.format(
             check=self.check,
             message=self.message,
-            location="{}:{}:{}".format(self.path, self.line, self.column),
+            location=f"{self.path}:{self.line}:{self.column}",
             in_patch="yes" if self.revision.contains(self) else "no",
             publishable="yes" if self.is_publishable() else "no",
         )

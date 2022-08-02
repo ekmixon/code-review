@@ -131,7 +131,7 @@ class BackendAPI(object):
         url_post = urllib.parse.urljoin(self.url, url_path)
         response = requests.post(url_post, json=data, auth=auth)
         if not response.ok:
-            logger.warn("Backend rejected the payload: {}".format(response.content))
+            logger.warn(f"Backend rejected the payload: {response.content}")
         response.raise_for_status()
         out = response.json()
         logger.info("Created item on backend", url=url_post, id=out["id"])

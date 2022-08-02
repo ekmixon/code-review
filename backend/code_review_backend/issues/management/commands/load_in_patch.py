@@ -39,13 +39,11 @@ def load_hgmo_patch(diff):
 
     patch = Patch.parse_patch(resp.text, skip_comments=False)
     assert patch != {}, "Empty patch"
-    lines = {
+    return {
         # Use all changes in new files
         filename: diff.get("touched", []) + diff.get("added", [])
         for filename, diff in patch.items()
     }
-
-    return lines
 
 
 def detect_in_patch(issue, lines):
@@ -74,10 +72,9 @@ def process_diff(diff: Diff):
 
         issues = [detect_in_patch(issue, lines) for issue in diff.issues.all()]
         logging.info(
-            "Found {} issues in patch for {}".format(
-                len([i for i in issues if i.in_patch]), diff.id
-            )
+            f"Found {len([i for i in issues if i.in_patch])} issues in patch for {diff.id}"
         )
+
         Issue.objects.bulk_update(issues, ["in_patch"])
     except Exception as e:
         logging.info(f"Failure on diff {diff.id}: {e}")
@@ -99,7 +96,7 @@ class Command(BaseCommand):
         diffs = (
             Diff.objects.filter(issues__in_patch__isnull=True).order_by("id").distinct()
         )
-        logger.debug("Will process {} diffs".format(diffs.count()))
+        logger.debug(f"Will process {diffs.count()} diffs")
 
         # Close all DB connection so each process get its own
         db.connections.close_all()

@@ -15,6 +15,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
+
 import logging
 import os
 
@@ -210,9 +211,7 @@ if "DYNO" in os.environ:
     USE_X_FORWARDED_HOST = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-    # Load taskcluster secrets on Heroku
-    taskcluster_secret = os.getenv("TASKCLUSTER_SECRET")
-    if taskcluster_secret:
+    if taskcluster_secret := os.getenv("TASKCLUSTER_SECRET"):
         taskcluster.auth()
         taskcluster.load_secrets(taskcluster_secret, prefixes=["common", "backend"])
 

@@ -62,10 +62,7 @@ class MozLintIssue(Issue):
         """
 
         # See https://github.com/mozilla/release-services/issues/777
-        if self.linter == "flake8" and self.check == "Q000":
-            return True
-
-        return False
+        return self.linter == "flake8" and self.check == "Q000"
 
     def validates(self):
         """
@@ -81,8 +78,8 @@ class MozLintIssue(Issue):
         message = self.message
         if len(message) > 0:
             message = message[0].capitalize() + message[1:]
-        linter = "{}: {}".format(self.linter, self.check) if self.check else self.linter
-        return "{}: {} [{}]".format(self.level.name, message, linter)
+        linter = f"{self.linter}: {self.check}" if self.check else self.linter
+        return f"{self.level.name}: {message} [{linter}]"
 
     def as_markdown(self):
         """
@@ -121,9 +118,7 @@ class MozLintTask(AnalysisTask):
     def display_name(self):
         if self.linter:
             return f"{self.linter} (Mozlint)"
-        if self.name.startswith("source-test-"):
-            return self.name[12:]
-        return self.name
+        return self.name[12:] if self.name.startswith("source-test-") else self.name
 
     def build_help_message(self, files):
         return "`./mach lint --warnings --outgoing`"

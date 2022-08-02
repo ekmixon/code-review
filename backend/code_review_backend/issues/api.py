@@ -273,19 +273,13 @@ class IssueCheckHistory(CachedView, generics.ListAPIView):
             .annotate(total=Count("id"))
         )
 
-        # Filter by repository
-        repository = self.request.query_params.get("repository")
-        if repository:
+        if repository := self.request.query_params.get("repository"):
             queryset = queryset.filter(diff__revision__repository__slug=repository)
 
-        # Filter by analyzer
-        analyzer = self.request.query_params.get("analyzer")
-        if analyzer:
+        if analyzer := self.request.query_params.get("analyzer"):
             queryset = queryset.filter(analyzer=analyzer)
 
-        # Filter by check
-        check = self.request.query_params.get("check")
-        if check:
+        if check := self.request.query_params.get("check"):
             queryset = queryset.filter(check=check)
 
         # Filter by date

@@ -32,15 +32,14 @@ class DebugReporter(Reporter):
         logger.info("Debug revision", rev=str(revision))
         for issue in issues:
             logger.info(
-                "Issue {}".format(
-                    "publishable" if issue.is_publishable() else "silent"
-                ),
+                f'Issue {"publishable" if issue.is_publishable() else "silent"}',
                 issue=str(issue),
             )
+
         for task in task_failures:
             logger.info("Task failure detected", name=task.name, task=task.id)
         for patch in revision.improvement_patches:
-            logger.info("Patch {}".format(patch))
+            logger.info(f"Patch {patch}")
 
         # Output json report in public directory
         report = {

@@ -34,13 +34,13 @@ class ImprovementPatch(object):
 
         # Build name from analyzer and revision
         self.analyzer = analyzer
-        self.name = "{}-{}.diff".format(self.analyzer.name, patch_name)
+        self.name = f"{self.analyzer.name}-{patch_name}.diff"
         self.content = content
         self.url = None
         self.path = None
 
     def __str__(self):
-        return "{}: {}".format(self.analyzer.name, self.url or self.path or self.name)
+        return f"{self.analyzer.name}: {self.url or self.path or self.name}"
 
     def write(self):
         """
@@ -60,11 +60,12 @@ class ImprovementPatch(object):
             not settings.taskcluster.local
         ), "Only publish on online Taskcluster tasks"
         self.url = taskcluster.upload_artifact(
-            "public/patch/{}".format(self.name),
+            f"public/patch/{self.name}",
             self.content,
-            content_type="text/plain; charset=utf-8",  # Displays instead of download
+            content_type="text/plain; charset=utf-8",
             ttl=timedelta(days=days_ttl - 1),
         )
+
         logger.info("Improvement patch published", url=self.url)
 
 
@@ -128,17 +129,17 @@ class Revision(object):
     @property
     def namespaces(self):
         return [
-            "phabricator.{}".format(self.id),
-            "phabricator.diff.{}".format(self.diff_id),
-            "phabricator.phid.{}".format(self.phid),
-            "phabricator.diffphid.{}".format(self.diff_phid),
+            f"phabricator.{self.id}",
+            f"phabricator.diff.{self.diff_id}",
+            f"phabricator.phid.{self.phid}",
+            f"phabricator.diffphid.{self.diff_phid}",
         ]
 
     def __repr__(self):
         return self.diff_phid
 
     def __str__(self):
-        return "Phabricator #{} - {}".format(self.diff_id, self.diff_phid)
+        return f"Phabricator #{self.diff_id} - {self.diff_phid}"
 
     @staticmethod
     def from_try(try_task: dict, phabricator: PhabricatorAPI):
@@ -167,7 +168,7 @@ class Revision(object):
         diffs = phabricator.search_diffs(
             diff_phid=diff_phid, attachments={"commits": True}
         )
-        assert len(diffs) == 1, "No diff available for {}".format(diff_phid)
+        assert len(diffs) == 1, f"No diff available for {diff_phid}"
         diff = diffs[0]
         diff_id = diff["id"]
         phid = diff["revisionPHID"]
@@ -195,7 +196,7 @@ class Revision(object):
             revision=revision,
             phabricator_repository=repos["data"][0],
             diff=diff,
-            url="https://{}/D{}".format(phabricator.hostname, revision["id"]),
+            url=f'https://{phabricator.hostname}/D{revision["id"]}',
             patch=patch,
         )
 
@@ -219,13 +220,12 @@ class Revision(object):
         response.raise_for_status()
         description = response.json()["desc"]
         match = REGEX_PHABRICATOR_COMMIT.search(description)
-        if match is not None:
-            url, revision_id = match.groups()
-            revision_id = int(revision_id)
-            logger.info("Found phabricator revision", id=revision_id, url=url)
-        else:
+        if match is None:
             raise Exception(f"No phabricator revision found in commit {commit_url}")
 
+        url, revision_id = match.groups()
+        revision_id = int(revision_id)
+        logger.info("Found phabricator revision", id=revision_id, url=url)
         # Lookup the Phabricator revision to get details (phid, title, bugzilla_id, ...)
         revision = phabricator.load_revision(rev_id=revision_id)
 
@@ -453,9 +453,7 @@ class Revision(object):
 
     @property
     def title(self):
-        if self.revision is None:
-            return None
-        return self.revision["fields"].get("title")
+        return None if self.revision is None else self.revision["fields"].get("title")
 
     def as_dict(self):
         """

@@ -20,7 +20,7 @@ def validate_path(value):
     assert isinstance(value, str), "Path should be a string"
     assert len(value) > 0, "Path should not be empty"
     assert not os.path.isabs(value), "Path should not be absolute"
-    logger.debug("Path {} is valid".format(value))
+    logger.debug(f"Path {value} is valid")
 
 
 def validate_all_types(iterable, t):
@@ -42,7 +42,7 @@ def validate_string(value):
 
 
 def validate_levels(value, levels=("warning", "error")):
-    assert value in levels, "must be in {}".format(", ".join(levels))
+    assert value in levels, f'must be in {", ".join(levels)}'
 
 
 FIELDS = (
@@ -66,30 +66,25 @@ def validate_issue(payload):
     # Check all required keys are here
     keys = set(payload.keys())
     required = {field.name for field in FIELDS if field.required is True}
-    diff = required.difference(keys)
-    if diff:
-        raise Exception("Missing required keys {}".format(", ".join(sorted(diff))))
+    if diff := required.difference(keys):
+        raise Exception(f'Missing required keys {", ".join(sorted(diff))}')
 
-    # Check no extra keys is set
-    diff = keys.difference(field.name for field in FIELDS)
-    if diff:
-        logger.warning(
-            "Extra fields will not be used: {}".format(", ".join(sorted(diff)))
-        )
+    if diff := keys.difference(field.name for field in FIELDS):
+        logger.warning(f'Extra fields will not be used: {", ".join(sorted(diff))}')
 
     # Validate all fields one by one
     for field in FIELDS:
         if field.name in payload:
-            logger.debug("Validating field {}".format(field.name))
+            logger.debug(f"Validating field {field.name}")
             for validator in field.validators:
                 try:
                     validator(payload[field.name])
                 except Exception as e:
-                    raise Exception("{} {}".format(field.name, e))
+                    raise Exception(f"{field.name} {e}")
+        elif field.required is True:
+            raise Exception(f"Missing required field {field.name}")
         else:
-            if field.required is True:
-                raise Exception("Missing required field {}".format(field.name))
-            logger.debug("Missing optional field {}".format(field.name))
+            logger.debug(f"Missing optional field {field.name}")
 
     return True
 
@@ -107,28 +102,28 @@ def validate(payload):
     assert validate_all_types(payload.values(), list), "All top values must be lists"
 
     for path, issues in payload.items():
-        logger.debug("Validating section {}".format(path))
+        logger.debug(f"Validating section {path}")
         validate_path(path)
 
         # All issues must be dicts
         assert validate_all_types(
             issues, dict
-        ), "All issues for {} must be dicts".format(path)
+        ), f"All issues for {path} must be dicts"
+
 
         # Validate all issues
         for i, issue in enumerate(issues):
-            logger.debug("Validating issue n°{} for {}".format(i + 1, path))
+            logger.debug(f"Validating issue n°{i + 1} for {path}")
             try:
                 validate_issue(issue)
 
                 # Check the top path is the same in the issue
                 assert (
                     path == issue["path"]
-                ), "Top path and issue path must be identical ({} != {})".format(
-                    path, issue["path"]
-                )
+                ), f'Top path and issue path must be identical ({path} != {issue["path"]})'
+
             except Exception as e:
-                raise Exception("Invalid issue n°{} for {} : {}".format(i + 1, path, e))
+                raise Exception(f"Invalid issue n°{i + 1} for {path} : {e}")
 
     return True
 
@@ -157,10 +152,10 @@ if __name__ == "__main__":
         payload = json.load(args.issues_file)
         validate(payload)
     except json.decoder.JSONDecodeError as e:
-        logger.error("Invalid JSON payload: {}".format(e))
+        logger.error(f"Invalid JSON payload: {e}")
         sys.exit(1)
     except Exception as e:
-        logger.error("Invalid issues format: {}".format(e))
+        logger.error(f"Invalid issues format: {e}")
         sys.exit(1)
 
     logger.info("Your file is valid !")

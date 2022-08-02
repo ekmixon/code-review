@@ -72,6 +72,8 @@ def mock_issues(mock_task):
     """
     task = mock_task(DefaultTask, "mock-analyzer")
 
+
+
     class MockIssue(object):
         def __init__(self, nb):
             self.nb = nb
@@ -79,7 +81,7 @@ def mock_issues(mock_task):
             self.analyzer = task
 
         def as_markdown(self):
-            return "This is the mock issue n°{}".format(self.nb)
+            return f"This is the mock issue n°{self.nb}"
 
         def as_text(self):
             return str(self.nb)
@@ -92,6 +94,7 @@ def mock_issues(mock_task):
 
         def is_build_error(self):
             return self.nb % 4 == 0
+
 
     return [MockIssue(i) for i in range(5)]
 
@@ -330,7 +333,7 @@ class MockQueue(object):
             task_id: {
                 "dependencies": desc.get("dependencies", []),
                 "metadata": {
-                    "name": desc.get("name", "source-test-mozlint-{}".format(task_id))
+                    "name": desc.get("name", f"source-test-mozlint-{task_id}")
                 },
                 "payload": {
                     "image": desc.get("image", "alpine"),
@@ -339,6 +342,7 @@ class MockQueue(object):
             }
             for task_id, desc in relations.items()
         }
+
 
         # Create status
         self._status = {
@@ -409,7 +413,7 @@ class MockQueue(object):
         self._artifacts[task_id]["artifacts"].append(payload)
         return {
             "storageType": "s3",
-            "putUrl": "http://storage.test/{}".format(name),
+            "putUrl": f"http://storage.test/{name}",
             "contentType": payload["contentType"],
         }
 
@@ -433,7 +437,7 @@ class MockIndex(object):
             None,
         )
         if task_id is None:
-            raise Exception("Task {} not found".format(route))
+            raise Exception(f"Task {route} not found")
         return {"taskId": task_id}
 
 

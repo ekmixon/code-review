@@ -88,9 +88,7 @@ def main():
         taskcluster.secrets["ALLOWED_PATHS"],
         taskcluster.secrets["repositories"],
     )
-    # Setup statistics
-    influx_conf = taskcluster.secrets.get("influxdb")
-    if influx_conf:
+    if influx_conf := taskcluster.secrets.get("influxdb"):
         stats.auth(influx_conf)
 
     # Load reporters
@@ -120,20 +118,16 @@ def main():
                 queue_service.task(settings.try_task_id), phabricator_api
             )
     except Exception as e:
-        # Report revision loading failure on production only
-        # On testing or dev instances, we can use different Phabricator
-        # configuration that do not match all the pulse messages sent
         if settings.on_production:
             raise
 
-        else:
-            logger.info(
-                "Failed to load revision",
-                task=settings.try_task_id,
-                error=str(e),
-                phabricator=phabricator["url"],
-            )
-            return 1
+        logger.info(
+            "Failed to load revision",
+            task=settings.try_task_id,
+            error=str(e),
+            phabricator=phabricator["url"],
+        )
+        return 1
 
     # Run workflow according to source
     w = Workflow(

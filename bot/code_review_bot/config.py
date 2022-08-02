@@ -113,7 +113,7 @@ class Settings(object):
         """
         Is this path allowed for reporting ?
         """
-        return any([fnmatch.fnmatch(path, rule) for rule in self.allowed_paths])
+        return any(fnmatch.fnmatch(path, rule) for rule in self.allowed_paths)
 
     def cleanup(self):
         shutil.rmtree(self.hgmo_cache)

@@ -163,7 +163,7 @@ def publish(repo_dir, repo_callsign, revision):
     match = re.search(fr"^-> ({base_url}D\d+)$", last_line.decode("utf-8"))
     assert match is not None, f"No revision found in moz-phab output:\n{output}"
 
-    return match.group(1)
+    return match[1]
 
 
 def notify(message):

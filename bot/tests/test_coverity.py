@@ -12,8 +12,8 @@ def mock_coverity(name):
     """
     Load a Coverity mock file, as a Taskcluster artifact payload
     """
-    path = os.path.join(MOCK_DIR, "coverity_{}.json".format(name))
-    assert os.path.exists(path), "Missing coverity mock {}".format(path)
+    path = os.path.join(MOCK_DIR, f"coverity_{name}.json")
+    assert os.path.exists(path), f"Missing coverity mock {path}"
     with open(path) as f:
         return {"public/code-review/coverity.json": json.load(f)}
 

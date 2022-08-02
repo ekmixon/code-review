@@ -31,9 +31,9 @@ def get_reporters(configuration):
             name = conf["reporter"]
             cls = reporters.get(name)
             if cls is None:
-                raise Exception("Missing reporter class {}".format(conf["reporter"]))
+                raise Exception(f"Missing reporter class {name}")
             out[name] = cls(conf)
         except Exception as e:
-            logger.warning("Failed to create reporter: {}".format(e))
+            logger.warning(f"Failed to create reporter: {e}")
 
     return out
